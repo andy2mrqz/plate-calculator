@@ -1,29 +1,22 @@
 <script lang="ts">
+  import { plates, reset } from "./store";
+
   let barWeight = 45;
   let otherBarWeight = false;
 
   // Initialize total weight to bar weight
   let totalWeight = barWeight;
 
-  let plates = {
-    55: 1,
-    45: 1,
-    35: 1,
-    25: 1,
-    15: 1,
-    5: 1,
-    2.5: 1,
-  };
   let otherPlateWeight = "";
   let handleAddingOtherPlateWeight = () => {
     if (otherPlateWeight !== "") {
-      plates[otherPlateWeight] = 1;
+      $plates[otherPlateWeight] = 1;
       otherPlateWeight = "";
     }
   };
 
   // Sort plates descending
-  $: sortedPlates = Object.entries(plates).sort(
+  $: sortedPlates = Object.entries($plates).sort(
     ([plateA, _a], [plateB, _b]) => {
       return Number(plateA) > Number(plateB) ? -1 : 1;
     }
@@ -31,7 +24,7 @@
 
   $: totalPossibleWeight =
     barWeight +
-    Object.entries(plates).reduce(
+    Object.entries($plates).reduce(
       (acc, [plate, numPairs]) => acc + Number(plate) * numPairs,
       0
     ) *
@@ -115,14 +108,14 @@
           <input
             type="number"
             name="numPlatesFor{weight}"
-            bind:value={plates[weight]}
+            bind:value={$plates[weight]}
             min={0}
           />
         </label>
         <button
           on:click={() => {
-            delete plates[weight];
-            plates = plates;
+            const { [weight]: _discard, ...newPlates } = $plates;
+            plates.set(newPlates);
           }}>delete</button
         >
         <br />
@@ -143,6 +136,9 @@
       {#if otherPlateWeight !== ""}
         <button on:click={handleAddingOtherPlateWeight}>add</button>
       {/if}
+      <br />
+      <br />
+      <button on:click={reset}>RESET</button>
     </fieldset>
   </details>
 </main>
