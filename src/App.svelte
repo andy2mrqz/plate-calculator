@@ -1,9 +1,42 @@
 <script lang="ts">
   let barWeight = 45;
   let otherBarWeight = false;
+  let plates = {
+    55: 1,
+    45: 1,
+    35: 1,
+    25: 1,
+    15: 1,
+    5: 1,
+    2.5: 1,
+  };
 
   // Initialize total weight to bar weight
   let totalWeight = barWeight;
+
+  let handlePlateInput = (
+    event: Event & {
+      currentTarget: EventTarget & HTMLInputElement;
+    },
+    weight: string
+  ) => {
+    plates[weight] = event.currentTarget.value;
+  };
+
+  // Sort plates descending
+  $: sortedPlates = Object.entries(plates).sort(
+    ([plateA, _a], [plateB, _b]) => {
+      return Number(plateA) > Number(plateB) ? -1 : 1;
+    }
+  );
+
+  $: totalPossibleWeight =
+    barWeight +
+    Object.entries(plates).reduce(
+      (acc, [plate, numPairs]) => acc + Number(plate) * numPairs,
+      0
+    ) *
+      2;
 </script>
 
 <main>
@@ -12,13 +45,28 @@
   <strong>Debug</strong>
   <p>Bar weight is {barWeight}</p>
   <p>Total weight is {totalWeight}</p>
+  <p>Total possible weight is {totalPossibleWeight}</p>
   <strong>End Debug</strong>
   <br />
   <br />
   <br />
 
-  <details>
+  <label for="weight">Total Weight:</label>
+  <input
+    type="number"
+    id="weight"
+    name="weight"
+    min={barWeight}
+    step={5}
+    bind:value={totalWeight}
+  />
+  <br />
+  <br />
+  <br />
+
+  <details open>
     <summary> Settings </summary>
+
     <fieldset>
       <legend>Bar Weight</legend>
       <label>
@@ -27,7 +75,7 @@
           bind:group={barWeight}
           name="barWeight"
           value={45}
-          on:change={() => otherBarWeight = false}
+          on:change={() => (otherBarWeight = false)}
         />
         45
       </label>
@@ -37,7 +85,7 @@
           bind:group={barWeight}
           name="barWeight"
           value={35}
-          on:change={() => otherBarWeight = false}
+          on:change={() => (otherBarWeight = false)}
         />
         35
       </label>
@@ -47,32 +95,36 @@
           bind:group={barWeight}
           name="barWeight"
           value={25}
-          on:change={() => otherBarWeight = false}
+          on:change={() => (otherBarWeight = false)}
         />
         25
       </label>
       <label>
-        <input
-          type="radio"
-          name="barWeight"
-          bind:value={otherBarWeight}
-        />
+        <input type="radio" name="barWeight" bind:value={otherBarWeight} />
         Other
         {#if otherBarWeight}
           <input type="number" name="barWeight" bind:value={barWeight} />
         {/if}
       </label>
     </fieldset>
+
+    <fieldset>
+      <legend>Plates</legend>
+      {#each sortedPlates as [weight, numPairs]}
+        <label>
+          {weight}lb
+          <input
+            type="number"
+            name="blah"
+            value={numPairs}
+            min={0}
+            on:input={(event) => handlePlateInput(event, weight)}
+          />
+        </label>
+        <br />
+      {/each}
+    </fieldset>
   </details>
-  <label for="weight">Weight:</label>
-  <input
-    type="number"
-    id="weight"
-    name="weight"
-    min={barWeight}
-    step={5}
-    bind:value={totalWeight}
-  />
 </main>
 
 <style>
