@@ -1,6 +1,10 @@
 <script lang="ts">
   let barWeight = 45;
   let otherBarWeight = false;
+
+  // Initialize total weight to bar weight
+  let totalWeight = barWeight;
+
   let plates = {
     55: 1,
     45: 1,
@@ -10,9 +14,13 @@
     5: 1,
     2.5: 1,
   };
-
-  // Initialize total weight to bar weight
-  let totalWeight = barWeight;
+  let otherPlateWeight = "";
+  let handleAddingOtherPlateWeight = () => {
+    if (otherPlateWeight !== "") {
+      plates[otherPlateWeight] = 1;
+      otherPlateWeight = "";
+    }
+  };
 
   // Sort plates descending
   $: sortedPlates = Object.entries(plates).sort(
@@ -111,21 +119,30 @@
             min={0}
           />
         </label>
+        <button
+          on:click={() => {
+            delete plates[weight];
+            plates = plates;
+          }}>delete</button
+        >
         <br />
       {/each}
       <label>
-        Other
+        Other plate size:
         <input
+          class="no-arrows"
           type="number"
-          min={0}
+          min={0.01}
           name="otherPlateWeight"
           placeholder="100 lbs"
-          on:change={(event) => {
-            plates[event.currentTarget.value] = 1;
-            event.currentTarget.value = "";
-          }}
+          bind:value={otherPlateWeight}
+          on:keypress={({ key }) =>
+            key === "Enter" && handleAddingOtherPlateWeight()}
         />
       </label>
+      {#if otherPlateWeight !== ""}
+        <button on:click={handleAddingOtherPlateWeight}>add</button>
+      {/if}
     </fieldset>
   </details>
 </main>
