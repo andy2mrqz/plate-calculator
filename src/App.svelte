@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { plates, reset } from "./store";
-
-  let barWeight = 45;
-  let otherBarWeight = false;
+  import { plates, barWeight, defaultBarWeight, reset } from "./store";
 
   // Initialize total weight to bar weight
-  let totalWeight = barWeight;
+  // TODO: Move totalWeight to store
+  let totalWeight = $barWeight;
+  let isCustomBarWeight = $barWeight !== defaultBarWeight;
 
   let otherPlateWeight = "";
   let handleAddingOtherPlateWeight = () => {
@@ -15,6 +14,10 @@
     }
   };
 
+  $: if ($barWeight > totalWeight ) {
+    totalWeight = $barWeight
+  }
+
   // Sort plates descending
   $: sortedPlates = Object.entries($plates).sort(
     ([plateA, _a], [plateB, _b]) => {
@@ -23,7 +26,7 @@
   );
 
   $: totalPossibleWeight =
-    barWeight +
+    $barWeight +
     Object.entries($plates).reduce(
       (acc, [plate, numPairs]) => acc + Number(plate) * numPairs,
       0
@@ -35,7 +38,7 @@
   <h1>Plate Calculator</h1>
 
   <strong>Debug</strong>
-  <p>Bar weight is {barWeight}</p>
+  <p>Bar weight is {$barWeight}</p>
   <p>Total weight is {totalWeight}</p>
   <p>Total possible weight is {totalPossibleWeight}</p>
   <strong>End Debug</strong>
@@ -48,7 +51,7 @@
     type="number"
     id="weight"
     name="weight"
-    min={barWeight}
+    min={$barWeight}
     step={5}
     bind:value={totalWeight}
   />
@@ -64,38 +67,43 @@
       <label>
         <input
           type="radio"
-          bind:group={barWeight}
+          bind:group={$barWeight}
           name="barWeight"
           value={45}
-          on:change={() => (otherBarWeight = false)}
+          on:change={() => (isCustomBarWeight = false)}
         />
         45
       </label>
       <label>
         <input
           type="radio"
-          bind:group={barWeight}
+          bind:group={$barWeight}
           name="barWeight"
           value={35}
-          on:change={() => (otherBarWeight = false)}
+          on:change={() => (isCustomBarWeight = false)}
         />
         35
       </label>
       <label>
         <input
           type="radio"
-          bind:group={barWeight}
+          bind:group={$barWeight}
           name="barWeight"
           value={25}
-          on:change={() => (otherBarWeight = false)}
+          on:change={() => (isCustomBarWeight = false)}
         />
         25
       </label>
       <label>
-        <input type="radio" name="barWeight" bind:value={otherBarWeight} />
+        <input type="radio" name="barWeight" bind:value={isCustomBarWeight} />
         Other
-        {#if otherBarWeight}
-          <input type="number" name="barWeight" bind:value={barWeight} />
+        {#if isCustomBarWeight}
+          <input
+            type="number"
+            name="barWeight"
+            bind:value={$barWeight}
+            min={0}
+          />
         {/if}
       </label>
     </fieldset>

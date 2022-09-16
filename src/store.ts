@@ -1,5 +1,7 @@
 import { writable } from "svelte/store";
 
+// TODO: DRY this up
+
 const PLATES_LOCALSTORAGE = "plates";
 
 type Plates = {
@@ -17,7 +19,7 @@ const defaultPlates: Plates = {
 };
 
 const maybePlates = (
-  platesInput: string | Plates | null
+  platesInput: string | object | null
 ): Plates | undefined => {
   try {
     if (!platesInput) return undefined;
@@ -54,6 +56,31 @@ plates.subscribe((updatedValue) => {
   );
 });
 
+const BAR_WEIGHT_LOCALSTORAGE = "barWeight";
+export const defaultBarWeight = 45;
+const maybeBarWeight = (
+  barWeightInput: string | number | null
+): number | undefined => {
+  return ["string", "number"].includes(typeof barWeightInput) &&
+    !isNaN(Number(barWeightInput))
+    ? Number(barWeightInput)
+    : undefined;
+};
+const storedBarWeight =
+  maybeBarWeight(localStorage.getItem(BAR_WEIGHT_LOCALSTORAGE)) ??
+  defaultBarWeight;
+export const barWeight = writable(storedBarWeight);
+
+barWeight.subscribe((updatedValue) => {
+  const updatedBarWeight = maybeBarWeight(updatedValue);
+  barWeight.set(updatedBarWeight ?? defaultBarWeight);
+  localStorage.setItem(
+    BAR_WEIGHT_LOCALSTORAGE,
+    (updatedBarWeight ?? defaultBarWeight).toString()
+  );
+});
+
 export const reset = () => {
   plates.set(defaultPlates);
+  barWeight.set(defaultBarWeight);
 };
