@@ -14,15 +14,6 @@
   // Initialize total weight to bar weight
   let totalWeight = barWeight;
 
-  let handlePlateInput = (
-    event: Event & {
-      currentTarget: EventTarget & HTMLInputElement;
-    },
-    weight: string
-  ) => {
-    plates[weight] = event.currentTarget.value;
-  };
-
   // Sort plates descending
   $: sortedPlates = Object.entries(plates).sort(
     ([plateA, _a], [plateB, _b]) => {
@@ -110,15 +101,14 @@
 
     <fieldset>
       <legend>Plates</legend>
-      {#each sortedPlates as [weight, numPairs]}
+      {#each sortedPlates as [weight]}
         <label>
           {weight}lb
           <input
             type="number"
             name="blah"
-            value={numPairs}
+            bind:value={plates[weight]}
             min={0}
-            on:input={(event) => handlePlateInput(event, weight)}
           />
         </label>
         <br />
