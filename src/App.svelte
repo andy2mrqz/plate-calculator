@@ -103,16 +103,29 @@
       <legend>Plates</legend>
       {#each sortedPlates as [weight]}
         <label>
-          {weight}lb
+          {weight} lbs
           <input
             type="number"
-            name="blah"
+            name="numPlatesFor{weight}"
             bind:value={plates[weight]}
             min={0}
           />
         </label>
         <br />
       {/each}
+      <label>
+        Other
+        <input
+          type="number"
+          min={0}
+          name="otherPlateWeight"
+          placeholder="100 lbs"
+          on:change={(event) => {
+            plates[event.currentTarget.value] = 1;
+            event.currentTarget.value = "";
+          }}
+        />
+      </label>
     </fieldset>
   </details>
 </main>
