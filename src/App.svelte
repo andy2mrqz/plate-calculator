@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { plates, barWeight, defaultBarWeight, reset } from "./store";
+  import {
+    settingsOpen,
+    plates,
+    barWeight,
+    defaultBarWeight,
+    reset,
+  } from "./store";
   import { sortedEntries } from "./utils";
 
   // Initialize total weight to bar weight
@@ -53,8 +59,7 @@
   <br />
   <br />
 
-  <!-- TODO: Add `open` to store? -->
-  <details open>
+  <details bind:open={$settingsOpen}>
     <summary>Settings</summary>
 
     <fieldset>

@@ -2,7 +2,17 @@ import { writable } from "svelte/store";
 
 // TODO: DRY this up
 
-const PLATES_LOCALSTORAGE = "plates";
+const SETTINGS_OPEN = "settingsOpen";
+
+const storedSettingsOpen =
+  (localStorage.getItem(SETTINGS_OPEN) ?? "true") === "true";
+export const settingsOpen = writable(storedSettingsOpen);
+
+settingsOpen.subscribe((updatedValue) => {
+  localStorage.setItem(SETTINGS_OPEN, updatedValue ? "true" : "false");
+});
+
+const PLATES = "plates";
 
 type Plates = {
   [weight: string]: number;
@@ -41,22 +51,20 @@ const maybePlates = (
   }
 };
 
-const storedPlates = maybePlates(
-  localStorage.getItem(PLATES_LOCALSTORAGE) ?? defaultPlates
-);
+const storedPlates = maybePlates(localStorage.getItem(PLATES) ?? defaultPlates);
 export const plates = writable(storedPlates);
 
 plates.subscribe((updatedValue) => {
   const updatedPlates = maybePlates(updatedValue);
   localStorage.setItem(
-    PLATES_LOCALSTORAGE,
+    PLATES,
     updatedPlates
       ? JSON.stringify(updatedPlates)
       : JSON.stringify(defaultPlates)
   );
 });
 
-const BAR_WEIGHT_LOCALSTORAGE = "barWeight";
+const BAR_WEIGHT = "barWeight";
 export const defaultBarWeight = 45;
 const maybeBarWeight = (
   barWeightInput: string | number | null
@@ -67,15 +75,14 @@ const maybeBarWeight = (
     : undefined;
 };
 const storedBarWeight =
-  maybeBarWeight(localStorage.getItem(BAR_WEIGHT_LOCALSTORAGE)) ??
-  defaultBarWeight;
+  maybeBarWeight(localStorage.getItem(BAR_WEIGHT)) ?? defaultBarWeight;
 export const barWeight = writable(storedBarWeight);
 
 barWeight.subscribe((updatedValue) => {
   const updatedBarWeight = maybeBarWeight(updatedValue);
   barWeight.set(updatedBarWeight ?? defaultBarWeight);
   localStorage.setItem(
-    BAR_WEIGHT_LOCALSTORAGE,
+    BAR_WEIGHT,
     (updatedBarWeight ?? defaultBarWeight).toString()
   );
 });
