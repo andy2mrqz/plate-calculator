@@ -1,5 +1,6 @@
 <script lang="ts">
   import { plates, barWeight, defaultBarWeight, reset } from "./store";
+  import { sortedEntries } from "./utils";
 
   // Initialize total weight to bar weight
   // TODO: Move totalWeight to store
@@ -14,16 +15,9 @@
     }
   };
 
-  $: if ($barWeight > totalWeight ) {
-    totalWeight = $barWeight
+  $: if ($barWeight > totalWeight) {
+    totalWeight = $barWeight;
   }
-
-  // Sort plates descending
-  $: sortedPlates = Object.entries($plates).sort(
-    ([plateA, _a], [plateB, _b]) => {
-      return Number(plateA) > Number(plateB) ? -1 : 1;
-    }
-  );
 
   $: totalPossibleWeight =
     $barWeight +
@@ -59,8 +53,9 @@
   <br />
   <br />
 
+  <!-- TODO: Add `open` to store? -->
   <details open>
-    <summary> Settings </summary>
+    <summary>Settings</summary>
 
     <fieldset>
       <legend>Bar Weight</legend>
@@ -110,7 +105,7 @@
 
     <fieldset>
       <legend>Plates</legend>
-      {#each sortedPlates as [weight]}
+      {#each sortedEntries($plates, true, false) as [weight]}
         <label>
           {weight} lbs
           <input
