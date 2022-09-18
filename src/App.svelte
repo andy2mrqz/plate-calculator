@@ -27,14 +27,6 @@
     totalWeight = 0;
   }
 
-  $: totalPossibleWeight =
-    $barWeight +
-    Object.entries($plates).reduce(
-      (acc, [plate, numPairs]) => acc + Number(plate) * numPairs,
-      0
-    ) *
-      2;
-
   $: needed = platesNeeded(totalWeight, $barWeight, $plates);
 </script>
 
@@ -63,6 +55,10 @@
   <br />
   <br />
 
+  {#if needed.delta}
+    <p>Final: {needed.final}</p>
+    <p>Delta: {needed.delta}</p>
+  {/if}
   Needed:
 
   <p>1 {$barWeight}lb bar</p>
@@ -72,10 +68,6 @@
       {weight}lb plate{#if count > 1}s{/if}
     </p>
   {/each}
-  {#if needed.delta}
-    <p>Final: {needed.final}</p>
-    <p>Delta: {needed.delta}</p>
-  {/if}
 
   <br />
   <br />

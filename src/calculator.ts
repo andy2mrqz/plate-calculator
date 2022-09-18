@@ -1,7 +1,7 @@
 import type { Plates } from "./store";
-// import { sortedEntries } from "./utils";
+import { sortedEntries } from "./utils";
 
-type PlatesNeededResponse = {
+type PlatesNeeded = {
   plates: Plates;
   final?: number;
   delta?: number;
@@ -11,16 +11,25 @@ export const platesNeeded = (
   target: number,
   barWeight: number,
   plates: Plates
-): PlatesNeededResponse => {
-  if (target < barWeight) {
-    return {
-      final: barWeight,
-      delta: target - barWeight,
-      plates: {},
-    };
+): PlatesNeeded => {
+  const platesOnHand = sortedEntries(plates);
+
+  let accumulatedWeight = barWeight;
+  const platesNeeded: Plates = {};
+  for (const [plate, count] of platesOnHand) {
+    if (accumulatedWeight >= target) break;
+
+    const anyLeft = (platesNeeded[plate] ?? 0) < count;
+    if (anyLeft && accumulatedWeight + +plate * 2 <= target) {
+      platesNeeded[plate] = (platesNeeded[plate] ?? 0) + 1;
+      accumulatedWeight += +plate * 2;
+    }
   }
 
-  // const plateCounts = sortedEntries(plates);
-
-  return { plates };
+  return {
+    plates: platesNeeded,
+    final: accumulatedWeight,
+    delta:
+      target === accumulatedWeight ? undefined : target - accumulatedWeight,
+  };
 };

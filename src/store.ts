@@ -24,6 +24,7 @@ const defaultPlates: Plates = {
   35: 1,
   25: 1,
   15: 1,
+  10: 1,
   5: 1,
   2.5: 1,
 };
