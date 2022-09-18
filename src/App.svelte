@@ -110,7 +110,7 @@
 
     <fieldset>
       <legend>Plates</legend>
-      {#each sortedEntries($plates, true, false) as [weight]}
+      {#each sortedEntries($plates) as [weight]}
         <label>
           {weight} lbs
           <input
