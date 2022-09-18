@@ -14,7 +14,7 @@ settingsOpen.subscribe((updatedValue) => {
 
 const PLATES = "plates";
 
-type Plates = {
+export type Plates = {
   [weight: string]: number;
 };
 

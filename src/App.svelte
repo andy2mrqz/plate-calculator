@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { platesNeeded } from "./calculator";
+
   import {
     settingsOpen,
     plates,
@@ -21,8 +23,8 @@
     }
   };
 
-  $: if ($barWeight > totalWeight) {
-    totalWeight = $barWeight;
+  $: if (totalWeight < 0) {
+    totalWeight = 0;
   }
 
   $: totalPossibleWeight =
@@ -32,29 +34,49 @@
       0
     ) *
       2;
+
+  $: needed = platesNeeded(totalWeight, $barWeight, $plates);
 </script>
 
 <main>
   <h1>Plate Calculator</h1>
 
-  <strong>Debug</strong>
-  <p>Bar weight is {$barWeight}</p>
-  <p>Total weight is {totalWeight}</p>
-  <p>Total possible weight is {totalPossibleWeight}</p>
-  <strong>End Debug</strong>
-  <br />
-  <br />
-  <br />
+  <!-- <strong>Debug</strong> -->
+  <!-- <p>Bar weight is {$barWeight}</p> -->
+  <!-- <p>Total weight is {totalWeight}</p> -->
+  <!-- <p>Total possible weight is {totalPossibleWeight}</p> -->
+  <!-- <strong>End Debug</strong> -->
+  <!-- <br /> -->
+  <!-- <br /> -->
+  <!-- <br /> -->
 
   <label for="weight">Total Weight:</label>
   <input
     type="number"
     id="weight"
     name="weight"
-    min={$barWeight}
+    min={0}
     step={5}
     bind:value={totalWeight}
   />
+  <br />
+  <br />
+  <br />
+
+  Needed:
+
+  <p>1 {$barWeight}lb bar</p>
+  {#each sortedEntries(needed.plates) as [weight, count]}
+    <p>
+      {count}
+      {weight}lb plate{#if count > 1}s{/if}
+    </p>
+  {/each}
+  {#if needed.delta}
+    <p>Final: {needed.final}</p>
+    <p>Delta: {needed.delta}</p>
+  {/if}
+
   <br />
   <br />
   <br />
