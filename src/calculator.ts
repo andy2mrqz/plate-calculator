@@ -17,12 +17,14 @@ export const platesNeeded = (
   let accumulatedWeight = barWeight;
   const platesNeeded: Plates = {};
   for (const [plate, count] of platesOnHand) {
-    if (accumulatedWeight >= target) break;
+    for (let numPlates = 1; numPlates <= count; numPlates++) {
+      if (accumulatedWeight >= target) break;
 
-    const anyLeft = (platesNeeded[plate] ?? 0) < count;
-    if (anyLeft && accumulatedWeight + +plate * 2 <= target) {
-      platesNeeded[plate] = (platesNeeded[plate] ?? 0) + 1;
-      accumulatedWeight += +plate * 2;
+      const pairWeight = +plate * 2;
+      if (accumulatedWeight + pairWeight <= target) {
+        platesNeeded[plate] = numPlates;
+        accumulatedWeight += pairWeight;
+      }
     }
   }
 

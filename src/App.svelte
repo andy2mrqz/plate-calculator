@@ -1,19 +1,12 @@
 <script lang="ts">
   import { platesNeeded } from "./calculator";
-
-  import {
-    settingsOpen,
-    plates,
-    barWeight,
-    defaultBarWeight,
-    reset,
-  } from "./store";
+  import { settingsOpen, plates, barWeight, reset } from "./store";
   import { sortedEntries } from "./utils";
 
   // Initialize total weight to bar weight
   // TODO: Move totalWeight to store
   let totalWeight = $barWeight;
-  let isCustomBarWeight = $barWeight !== defaultBarWeight;
+  let isCustomBarWeight = ![45, 35, 25].includes($barWeight);
 
   let otherPlateWeight = "";
   let handleAddingOtherPlateWeight = () => {
